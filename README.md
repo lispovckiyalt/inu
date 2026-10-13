@@ -1,3 +1,3 @@
 # Neko
 
-Simple dynamic C directory reader.
+Simple dynamic C++ directory reader.
