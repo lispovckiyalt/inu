@@ -4,15 +4,18 @@
 
 namespace fs = std::filesystem;
 
+#define COLOR_GREEN "\033[32m"
+#define COLOR_RESET "\033[0m"
+
 
 char*
 open_path(char** name) {
-	if (name == 0x0 || *name == 0x0) { return 0x0; }
+	if (name == NULL || *name == NULL) { return NULL; }
 
 	char* path = *name;
-	if (fs::exists(*name) == 0x0 || fs::is_directory(*name) == 0x0 ) {
+	if (!fs::exists(*name) || !fs::is_directory(*name)) {
         std::cout << "not found entry or not a directory :" << path << "\n"; 
-		return 0x0;
+		return NULL;
 	} 
 
 	return path;
@@ -21,21 +24,24 @@ open_path(char** name) {
 int
 main(int argc, char** argv)
 {
-	if (argc < 2) { printf("inu: argument 1: name directory"); return 1; }
+	if (argc < 2) { printf("usage: inu directory path"); return 1; }
 	for (int i = 1; i < argc; i++)
 	{
 		char* directory = open_path(&argv[i]);
-		if (directory == 0x0) { continue; }
+		if (directory == NULL) { continue; }
 		try
 		{
 			for (const auto& entry : std::filesystem::directory_iterator(directory))
 			{
-                    
-				 std::cout << entry.path().filename().native() << "\n";
+                if (entry.is_directory()) {
+                    std::cout << COLOR_GREEN << entry.path().filename().string() << COLOR_RESET << '\n';
+                }
+
+                std::cout << entry.path().filename().native() << '\n';
 			}
 		}
 		catch (const std::filesystem::filesystem_error& e) {
-			std::cout << "inu: err \n" << e.what();
+			std::cout << "inu: error \n" << e.what();
 		}
 	}
 
